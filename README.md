@@ -1,5 +1,5 @@
 ### Thumbnail-Creator
-Class for resize and create, generate thumbnails.<br>
+PHP Class for resize and create, generate thumbnails.<br>
 Supports GIF, JPG (JPEG), PNG and BMP images.<br>
 Will preserve transparency for GIF and PNG.<br>
 (JPG and BMP are not transparent.)<br>
