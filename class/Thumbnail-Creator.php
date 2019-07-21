@@ -21,8 +21,6 @@ Class Thumbnail
                            'save' => 'imagebmp']
     ];
 
-    public function __construct(){}
-
     public function resize($width='', $height='')
     {
         /* Get source and destination */
