@@ -5,8 +5,7 @@ require '../class/Thumbnail-Creator.php';
 $directory = '../images';
 $image = 'rainbow.gif';
 
-$rez = new Thumbnail();
-$rez->directory = $directory;
+$rez = new Thumbnail($directory);
 $rez->image = $image;
 $tmb = $rez->resize();
 $img = $rez->source;

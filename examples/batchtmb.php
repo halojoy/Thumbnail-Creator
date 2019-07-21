@@ -12,8 +12,7 @@ foreach($scanfiles as $file) {
     $allfiles[] = $file;
 }
 
-$rez = new Thumbnail();
-$rez->directory = $directory;
+$rez = new Thumbnail($directory);
 
 $count = 0;
 foreach($allfiles as $filename) {

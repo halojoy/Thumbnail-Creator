@@ -21,6 +21,12 @@ Class Thumbnail
                            'save' => 'imagebmp']
     ];
 
+    public function __construct($directory = '')
+    {
+        if ($directory)
+            $this->directory = rtrim($directory, '/');
+    }
+
     public function resize($width='', $height='')
     {
         /* Get source and destination */
@@ -29,7 +35,7 @@ Class Thumbnail
             $this->destin = $this->thumb;
         else
             $this->destin = 'tmb_'.$this->image;
-        $this->directory = rtrim($this->directory, '/');
+
         if ($this->directory) {           
             $this->source = $this->directory.'/'.$this->source;
             $this->destin = $this->directory.'/'.$this->destin;
