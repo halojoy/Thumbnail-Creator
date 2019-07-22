@@ -29,6 +29,10 @@ Class Thumbnail
 
     public function resize($width='', $height='')
     {
+        /* Set the thumbnail size */
+        if ($width)  $this->maxWidth  = $width;
+        if ($height) $this->maxHeight = $height;
+
         /* Get source and destination */
         $this->source = $this->image;
         if ($this->thumb)
@@ -41,9 +45,11 @@ Class Thumbnail
             $this->destin = $this->directory.'/'.$this->destin;
         }
 
-        /* If this thumb already exists then return */
+        /* If thumb exists and already has wanted size then return */
         if (file_exists($this->destin))
-            return $this->destin;
+            list($nowWidth, $nowHeight) = getimagesize($this->destin);
+            if ($nowWidth == $this->maxWidth || $nowHeight == $this->maxHeight)
+                return $this->destin;
 
         /* Get the image type */
         $type = exif_imagetype($this->source);
@@ -53,11 +59,9 @@ Class Thumbnail
         /* Load the image */
         $img = call_user_func(self::IMAGE_HANDLERS[$type]['load'], $this->source);
 
-        /* Get dimensions of image and max thumb size*/
+        /* Get dimensions of the image */
         $srcWidth  = imagesx($img);
         $srcHeight = imagesy($img);
-        if ($width)  $this->maxWidth  = $width;
-        if ($height) $this->maxHeight = $height;
         
         /* Get the thumb ratio k */
         $k = min($this->maxWidth/$srcWidth, $this->maxHeight/$srcHeight);
