@@ -46,10 +46,11 @@ Class Thumbnail
         }
 
         /* If thumb exists and already has wanted size then return */
-        if (file_exists($this->destin))
+        if (file_exists($this->destin)) {
             list($nowWidth, $nowHeight) = getimagesize($this->destin);
             if ($nowWidth == $this->maxWidth || $nowHeight == $this->maxHeight)
                 return $this->destin;
+        }
 
         /* Get the image type */
         $type = exif_imagetype($this->source);
