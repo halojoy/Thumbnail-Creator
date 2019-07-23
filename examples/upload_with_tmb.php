@@ -1,7 +1,7 @@
 <?php
 
 if (isset($_FILES['userfile'])) {
-    
+
     $type = $_FILES['userfile']['type'];
     if ($type != 'image/jpeg' && $type != 'image/gif' && $type != 'image/png' &&
         $type != 'image/bmp')
