@@ -2,13 +2,11 @@
 
 Class Thumbnail
 {
-    public $directory;
     public $image;
-    public $thumb;
-    public $maxWidth  = 300;
-    public $maxHeight = 100;
     public $source;
     public $destin;
+    public $maxWidth  = 300;
+    public $maxHeight = 100;
 
     const IMAGE_HANDLERS = [
         IMAGETYPE_GIF =>  ['load' => 'imagecreatefromgif',
@@ -21,29 +19,25 @@ Class Thumbnail
                            'save' => 'imagebmp']
     ];
 
-    public function __construct($directory = '')
+    public function __construct()
     {
-        if ($directory)
-            $this->directory = rtrim($directory, '/');
     }
 
     public function resize($width='', $height='')
     {
+        /* Set source and destination */
+        $this->source = $this->image;
+        $path = pathinfo($this->source);
+        $this->destin = $path['dirname'].'/tmb_'.$path['basename'];
+  
+        /* Get the image type */
+        $type = @exif_imagetype($this->source);
+        if (!$type || !self::IMAGE_HANDLERS[$type])
+            return;
+
         /* Set the thumbnail size */
         if ($width)  $this->maxWidth  = $width;
         if ($height) $this->maxHeight = $height;
-
-        /* Get source and destination */
-        $this->source = $this->image;
-        if ($this->thumb)
-            $this->destin = $this->thumb;
-        else
-            $this->destin = 'tmb_'.$this->image;
-
-        if ($this->directory) {           
-            $this->source = $this->directory.'/'.$this->source;
-            $this->destin = $this->directory.'/'.$this->destin;
-        }
 
         /* If thumb exists and already has wanted size then return */
         if (file_exists($this->destin)) {
@@ -51,11 +45,6 @@ Class Thumbnail
             if ($nowWidth == $this->maxWidth || $nowHeight == $this->maxHeight)
                 return $this->destin;
         }
-
-        /* Get the image type */
-        $type = exif_imagetype($this->source);
-        if (!$type || !self::IMAGE_HANDLERS[$type])
-            return 'unsupported';
 
         /* Load the image */
         $img = call_user_func(self::IMAGE_HANDLERS[$type]['load'], $this->source);
