@@ -2,9 +2,6 @@
 
 Class Thumbnail
 {
-    public $image;
-    public $source;
-    public $destin;
     public $maxWidth  = 300;
     public $maxHeight = 100;
 
@@ -23,43 +20,42 @@ Class Thumbnail
     {
     }
 
-    public function resize($width='', $height='')
+    public function resize($image, $width='', $height='')
     {
-        /* Set source and destination */
-        $this->source = $this->image;
-        $path = pathinfo($this->source);
-        $this->destin = $path['dirname'].'/tmb_'.$path['basename'];
-  
         /* Get the image type */
-        $type = @exif_imagetype($this->source);
+        $type = @exif_imagetype($image);
         if (!$type || !self::IMAGE_HANDLERS[$type])
             return;
+
+        /* Set destination thumb */
+        $path = pathinfo($image);
+        $thumb = $path['dirname'].'/tmb_'.$path['basename'];
 
         /* Set the thumbnail size */
         if ($width)  $this->maxWidth  = $width;
         if ($height) $this->maxHeight = $height;
 
         /* If thumb exists and already has wanted size then return */
-        if (file_exists($this->destin)) {
-            list($nowWidth, $nowHeight) = getimagesize($this->destin);
+        if (file_exists($thumb)) {
+            list($nowWidth, $nowHeight) = getimagesize($thumb);
             if ($nowWidth == $this->maxWidth || $nowHeight == $this->maxHeight)
-                return $this->destin;
+                return $thumb;
         }
 
         /* Load the image */
-        $img = call_user_func(self::IMAGE_HANDLERS[$type]['load'], $this->source);
+        $img = call_user_func(self::IMAGE_HANDLERS[$type]['load'], $image);
 
         /* Get dimensions of the image */
         $srcWidth  = imagesx($img);
         $srcHeight = imagesy($img);
-        
+
         /* Get the thumb ratio k */
         $k = min($this->maxWidth/$srcWidth, $this->maxHeight/$srcHeight);
 
         /* If already small image just copy and return thumb path */
         if ($k >= 1) {
-            copy($this->source, $this->destin);
-            return $this->destin;
+            copy($image, $thumb);
+            return $thumb;
         }
 
         /* Set the thumb size */
@@ -67,30 +63,30 @@ Class Thumbnail
         $tmbHeight = round($k * $srcHeight);
 
         /* Create a thumb template with new dimensions */
-        $thumb = imagecreatetruecolor($tmbWidth, $tmbHeight);
+        $tmb = imagecreatetruecolor($tmbWidth, $tmbHeight);
 
         /* Check if this image is GIF, then set Transparency */
         if ($type == IMAGETYPE_GIF)
-            imagecolortransparent($thumb, imagecolorallocate($thumb, 0, 0, 0));
+            imagecolortransparent($tmb, imagecolorallocate($tmb, 0, 0, 0));
 
         /* Check if this image is PNG, then set Transparency */
         if ($type == IMAGETYPE_PNG) {
-            imagealphablending($thumb, false);
-            imagesavealpha($thumb, true);
+            imagealphablending($tmb, false);
+            imagesavealpha($tmb, true);
         }
 
         /* Do the copy */
-        imagecopyresampled($thumb, $img, 0, 0, 0, 0,
+        imagecopyresampled($tmb, $img, 0, 0, 0, 0,
                            $tmbWidth, $tmbHeight, $srcWidth, $srcHeight);
 
         /* Save to path of new thumb image */
-        call_user_func(self::IMAGE_HANDLERS[$type]['save'], $thumb, $this->destin);
+        call_user_func(self::IMAGE_HANDLERS[$type]['save'], $tmb, $thumb);
 
         /* Clear memory, delete images used for creation */
         imagedestroy($img);
-        imagedestroy($thumb);
+        imagedestroy($tmb);
 
         /* Return path to the thumb */
-        return $this->destin;
+        return $thumb;
     }
 }

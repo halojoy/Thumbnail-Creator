@@ -1,17 +1,12 @@
 <?php
 
 require 'class/Thumbnail-Creator.php';
-/* Initiate the class with the image path */
+
 $rez = new Thumbnail;
+$img = 'images/rainbow.gif';
 
-/* Load the image path */
-$rez->image = 'images/rainbow.gif';
-
-/* Do the resize */
-$tmb = $rez->resize(300,100);
-
-/* Get image path */
-$img = $rez->source;
+/* Resize. Submit imagepath, thumb maxwidth, maxheight */
+$tmb = $rez->resize($img, 300, 150);
 
 /* Display a clickable thumbnail */
 echo '<a href="'.$img.'" target="_blank"><img src="'.$tmb.'"></a>';
